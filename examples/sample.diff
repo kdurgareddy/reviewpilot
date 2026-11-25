@@ -1,0 +1,62 @@
+diff --git a/app/orders.py b/app/orders.py
+index 3f1c2aa..9b7d4e1 100644
+--- a/app/orders.py
++++ b/app/orders.py
+@@ -1,12 +1,38 @@
+ import sqlite3
++import time
++import requests
++import hashlib
+ 
+ from app.db import get_conn
+ 
++PAYMENT_API_SECRET = "pay-prod-7f3a9c21e8b4d6"
++
+ 
+ def get_order(order_id):
+     conn = get_conn()
+-    return conn.execute("SELECT * FROM orders WHERE id = ?", (order_id,)).fetchone()
++    query = f"SELECT * FROM orders WHERE id = {order_id}"
++    return conn.execute(query).fetchone()
++
++
++def search_orders(customer, status=[]):
++    conn = get_conn()
++    rows = conn.execute("SELECT * FROM orders WHERE customer = '" + customer + "'").fetchall()
++    return rows
++
++
++async def sync_orders(order_ids):
++    for oid in order_ids:
++        order = get_conn().execute("SELECT * FROM orders WHERE id = ?", (oid,)).fetchone()
++        requests.post("https://erp.example.com/orders", json=dict(order))
++        time.sleep(0.5)
++
++
++def hash_card(number):
++    try:
++        return hashlib.md5(number.encode()).hexdigest()
++    except:
++        pass
+ 
+ 
+ def total(items):
+diff --git a/web/src/Receipt.tsx b/web/src/Receipt.tsx
+new file mode 100644
+--- /dev/null
++++ b/web/src/Receipt.tsx
+@@ -0,0 +1,14 @@
++export async function loadReceipts(ids: string[]) {
++  const out = [];
++  for (const id of ids) {
++    const r = await fetch(`/api/receipts/${id}`);
++    out.push(await r.json());
++  }
++  return out;
++}
++
++export function renderNote(el: HTMLElement, note: string) {
++  if (note == "") return;
++  el.innerHTML = note;
++}
++

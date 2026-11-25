@@ -1,0 +1,50 @@
+{
+  "model": "offline",
+  "cases": 15,
+  "labels": 39,
+  "overall": {
+    "tp": 34,
+    "fp": 0,
+    "fn": 5,
+    "precision": 1.0,
+    "recall": 0.872,
+    "f1": 0.932
+  },
+  "per_category": {
+    "security": {
+      "tp": 20,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.952,
+      "f1": 0.976
+    },
+    "bug": {
+      "tp": 8,
+      "fp": 0,
+      "fn": 4,
+      "precision": 1.0,
+      "recall": 0.667,
+      "f1": 0.8
+    },
+    "performance": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    }
+  },
+  "clean_cases": 3,
+  "clean_false_positives": 0,
+  "seconds": 0.02,
+  "misses": [
+    "java/ReportBuilder.java:23 bug",
+    "python/auth_views.py:15 security",
+    "python/pagination.py:8 bug",
+    "python/pagination.py:12 bug",
+    "python/pagination.py:16 bug"
+  ],
+  "false_positives": []
+}

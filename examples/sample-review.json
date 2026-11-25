@@ -1,0 +1,262 @@
+{
+  "findings": [
+    {
+      "file": "app/orders.py",
+      "line": 19,
+      "category": "security",
+      "severity": "critical",
+      "title": "SQL built from string formatting",
+      "message": "The query is assembled with string formatting or concatenation, which allows SQL injection.",
+      "rule_id": "SEC004",
+      "suggestion": "Use parameters: cursor.execute(\"SELECT * FROM users WHERE id = %s\", (user_id,))",
+      "confidence": 0.9,
+      "source": "static",
+      "agent": "security",
+      "end_line": null
+    },
+    {
+      "file": "app/orders.py",
+      "line": 13,
+      "category": "security",
+      "severity": "critical",
+      "title": "SQL built from string formatting",
+      "message": "The SQL string is built by interpolating values, which allows SQL injection when it is executed.",
+      "rule_id": "SEC004",
+      "suggestion": "Keep placeholders in the SQL and pass values separately to execute().",
+      "confidence": 0.85,
+      "source": "static",
+      "agent": "security",
+      "end_line": null
+    },
+    {
+      "file": "app/orders.py",
+      "line": 27,
+      "category": "performance",
+      "severity": "high",
+      "title": "Blocking sleep in async code",
+      "message": "time.sleep blocks the whole event loop, stalling every other request.",
+      "rule_id": "PERF003",
+      "suggestion": "Use `await asyncio.sleep(...)`.",
+      "confidence": 0.93,
+      "source": "static",
+      "agent": "performance",
+      "end_line": null
+    },
+    {
+      "file": "app/orders.py",
+      "line": 26,
+      "category": "performance",
+      "severity": "high",
+      "title": "Blocking HTTP call in async code",
+      "message": "`requests` is synchronous and blocks the event loop inside an async function.",
+      "rule_id": "PERF004",
+      "suggestion": "Use an async client such as httpx.AsyncClient or aiohttp.",
+      "confidence": 0.9,
+      "source": "static",
+      "agent": "performance",
+      "end_line": null
+    },
+    {
+      "file": "app/orders.py",
+      "line": 33,
+      "category": "bug",
+      "severity": "high",
+      "title": "Exception silently swallowed",
+      "message": "The exception is caught and ignored, so failures will go unnoticed.",
+      "rule_id": "BUG002",
+      "suggestion": "Log the error or re-raise it; don't `pass`.",
+      "confidence": 0.85,
+      "source": "static",
+      "agent": "bugs",
+      "end_line": null
+    },
+    {
+      "file": "app/orders.py",
+      "line": 25,
+      "category": "performance",
+      "severity": "high",
+      "title": "Database query inside a loop (N+1)",
+      "message": "A query runs once per iteration; with N rows this makes N round trips to the database.",
+      "rule_id": "PERF001",
+      "suggestion": "Fetch everything in one query (e.g. `WHERE id IN (...)`, select_related / prefetch_related, or a JOIN).",
+      "confidence": 0.82,
+      "source": "static",
+      "agent": "performance",
+      "end_line": null
+    },
+    {
+      "file": "app/orders.py",
+      "line": 8,
+      "category": "security",
+      "severity": "high",
+      "title": "Hard-coded credential",
+      "message": "A password, token or API key appears to be assigned a literal value.",
+      "rule_id": "SEC003",
+      "suggestion": "Read the value from an environment variable or secrets manager instead.",
+      "confidence": 0.8,
+      "source": "static",
+      "agent": "security",
+      "end_line": null
+    },
+    {
+      "file": "web/src/Receipt.tsx",
+      "line": 12,
+      "category": "security",
+      "severity": "high",
+      "title": "Possible XSS sink",
+      "message": "Assigning unsanitised content to innerHTML / dangerouslySetInnerHTML allows cross-site scripting.",
+      "rule_id": "SEC012",
+      "suggestion": "Use textContent, or sanitise with a library such as DOMPurify.",
+      "confidence": 0.78,
+      "source": "static",
+      "agent": "security",
+      "end_line": null
+    },
+    {
+      "file": "app/orders.py",
+      "line": 17,
+      "category": "bug",
+      "severity": "medium",
+      "title": "Mutable default argument",
+      "message": "Default values are created once, so this list/dict is shared between calls.",
+      "rule_id": "BUG004",
+      "suggestion": "Default to None and create the object inside: `items=None` then `items = items or []`.",
+      "confidence": 0.92,
+      "source": "static",
+      "agent": "bugs",
+      "end_line": null
+    },
+    {
+      "file": "app/orders.py",
+      "line": 32,
+      "category": "security",
+      "severity": "medium",
+      "title": "Weak hash for sensitive data",
+      "message": "MD5 and SHA-1 are broken for passwords, signatures and integrity checks.",
+      "rule_id": "SEC009",
+      "suggestion": "Use bcrypt/argon2 for passwords, or SHA-256+ (hashlib.sha256) for integrity.",
+      "confidence": 0.75,
+      "source": "static",
+      "agent": "security",
+      "end_line": null
+    },
+    {
+      "file": "web/src/Receipt.tsx",
+      "line": 4,
+      "category": "performance",
+      "severity": "medium",
+      "title": "HTTP request inside a loop",
+      "message": "Sequential network calls in a loop are slow; latency adds up per item.",
+      "rule_id": "PERF002",
+      "suggestion": "Batch the requests, or run them concurrently (asyncio.gather / Promise.all).",
+      "confidence": 0.72,
+      "source": "static",
+      "agent": "performance",
+      "end_line": null
+    },
+    {
+      "file": "app/orders.py",
+      "line": 17,
+      "category": "testing",
+      "severity": "medium",
+      "title": "New code without tests",
+      "message": "This PR adds 3 public function(s) (search_orders, sync_orders, hash_card) but no test file covers them.",
+      "rule_id": "TEST001",
+      "suggestion": "Add tests for `search_orders` covering the normal case, edge cases and errors.",
+      "confidence": 0.7,
+      "source": "static",
+      "agent": "testing",
+      "end_line": null
+    },
+    {
+      "file": "web/src/Receipt.tsx",
+      "line": 1,
+      "category": "testing",
+      "severity": "medium",
+      "title": "New code without tests",
+      "message": "This PR adds 2 public function(s) (loadReceipts, renderNote) but no test file covers them.",
+      "rule_id": "TEST001",
+      "suggestion": "Add tests for `loadReceipts` covering the normal case, edge cases and errors.",
+      "confidence": 0.7,
+      "source": "static",
+      "agent": "testing",
+      "end_line": null
+    },
+    {
+      "file": "web/src/Receipt.tsx",
+      "line": 11,
+      "category": "bug",
+      "severity": "medium",
+      "title": "Loose equality",
+      "message": "`==` coerces types (e.g. `0 == ''` is true); use strict equality.",
+      "rule_id": "BUG008",
+      "suggestion": "Use `===` / `!==`.",
+      "confidence": 0.65,
+      "source": "static",
+      "agent": "bugs",
+      "end_line": null
+    }
+  ],
+  "files_reviewed": 2,
+  "lines_added": 41,
+  "summary": "## ReviewPilot\n\nReviewed **2 file(s)**, **41 added line(s)**.\n\n| Agent | Findings | By severity |\n|---|---:|---|\n| Security | 5 | \ud83d\udd34 2 \ud83d\udfe0 2 \ud83d\udfe1 1 |\n| Bugs | 3 | \ud83d\udfe0 1 \ud83d\udfe1 2 |\n| Performance | 4 | \ud83d\udfe0 3 \ud83d\udfe1 1 |\n| Testing | 2 | \ud83d\udfe1 2 |\n\n**Top issues**\n\n- \ud83d\udd34 **SQL built from string formatting** \u00b7 `app/orders.py:19`\n- \ud83d\udd34 **SQL built from string formatting** \u00b7 `app/orders.py:13`\n- \ud83d\udfe0 **Blocking sleep in async code** \u00b7 `app/orders.py:27`\n- \ud83d\udfe0 **Blocking HTTP call in async code** \u00b7 `app/orders.py:26`\n- \ud83d\udfe0 **Exception silently swallowed** \u00b7 `app/orders.py:33`",
+  "verdict": "request_changes",
+  "usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "calls": 0
+  },
+  "trace": [
+    {
+      "node": "parse",
+      "start_ms": 0.11431500001890527,
+      "end_ms": 1.6293310000037309,
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "node": "security",
+      "start_ms": 1.8418250000422631,
+      "end_ms": 2.846080000040274,
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "node": "bugs",
+      "start_ms": 2.8671640000084153,
+      "end_ms": 3.339443000072606,
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "node": "performance",
+      "start_ms": 3.3540630000743477,
+      "end_ms": 3.651760000025206,
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "node": "testing",
+      "start_ms": 3.6610050000263072,
+      "end_ms": 3.7232319999702668,
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "node": "verify",
+      "start_ms": 3.7565540000059627,
+      "end_ms": 3.823438000040369,
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "node": "summarize",
+      "start_ms": 3.8384450000421566,
+      "end_ms": 3.8958029999776045,
+      "status": "ok",
+      "detail": ""
+    }
+  ],
+  "dropped": 3,
+  "model": "offline"
+}

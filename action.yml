@@ -1,0 +1,69 @@
+name: ReviewPilot
+description: Multi-agent AI code review (security, bugs, performance, testing) with inline PR comments.
+author: Durga Reddy Kovvuri
+branding:
+  icon: shield
+  color: blue
+
+inputs:
+  anthropic-api-key:
+    description: Anthropic API key. Leave empty (and openai-api-key empty) to run the static agents only.
+    required: false
+  openai-api-key:
+    description: OpenAI API key (used if no Anthropic key is given).
+    required: false
+  model:
+    description: Model name, e.g. claude-sonnet-4-5 or gpt-4.1-mini.
+    required: false
+  fail-on:
+    description: Fail the check at or above this severity (critical, high, medium, low). Empty = never fail.
+    required: false
+    default: ""
+  sarif:
+    description: Also upload findings to GitHub code scanning.
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install ReviewPilot
+      shell: bash
+      run: pip install --quiet "${{ github.action_path }}"
+
+    - name: Compute diff
+      shell: bash
+      run: |
+        git fetch --no-tags --depth=200 origin "${{ github.base_ref }}"
+        git diff "origin/${{ github.base_ref }}...HEAD" > "$RUNNER_TEMP/pr.diff"
+        echo "Diff: $(wc -l < "$RUNNER_TEMP/pr.diff") lines"
+
+    - name: Review and comment
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key }}
+        OPENAI_API_KEY: ${{ inputs.openai-api-key }}
+        REVIEWPILOT_MODEL: ${{ inputs.model }}
+      run: |
+        args=(review "$RUNNER_TEMP/pr.diff" --github-pr "${{ github.repository }}#${{ github.event.pull_request.number }}" --sha "${{ github.event.pull_request.head.sha }}")
+        if [ -n "${{ inputs.fail-on }}" ]; then args+=(--fail-on "${{ inputs.fail-on }}"); fi
+        reviewpilot "${args[@]}"
+
+    - name: SARIF report
+      if: ${{ always() && inputs.sarif == 'true' }}
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key }}
+        OPENAI_API_KEY: ${{ inputs.openai-api-key }}
+      run: reviewpilot review "$RUNNER_TEMP/pr.diff" --format sarif > "$RUNNER_TEMP/reviewpilot.sarif" || true
+
+    - uses: github/codeql-action/upload-sarif@v3
+      if: ${{ always() && inputs.sarif == 'true' }}
+      with:
+        sarif_file: ${{ runner.temp }}/reviewpilot.sarif
+        category: reviewpilot
