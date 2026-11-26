@@ -102,7 +102,7 @@ async def handle(msg: dict[str, Any]) -> dict[str, Any] | None:
             return _ok(mid, {"content": [{"type": "text", "text": text}], "isError": False})
         except KeyError as e:
             return {"jsonrpc": "2.0", "id": mid, "error": {"code": -32602, "message": f"unknown tool or argument: {e}"}}
-        except Exception as e:  # reported to the client in-band
+        except Exception as e:  # noqa: BLE001 - reported to the client in-band
             return _ok(mid, {"content": [{"type": "text", "text": f"{type(e).__name__}: {e}"}], "isError": True})
     return {"jsonrpc": "2.0", "id": mid, "error": {"code": -32601, "message": f"method not found: {method}"}}
 

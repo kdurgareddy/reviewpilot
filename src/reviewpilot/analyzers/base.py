@@ -8,8 +8,8 @@ touch. Some rules also need the surrounding hunk (for example "inside a loop" or
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
 from collections.abc import Callable, Iterable
+from dataclasses import dataclass, field
 
 from ..models import Category, FileDiff, Finding, Hunk, Line, Severity
 

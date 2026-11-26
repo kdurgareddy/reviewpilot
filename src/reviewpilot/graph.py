@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import asyncio
 import time
-from dataclasses import dataclass, field
 from collections.abc import Awaitable, Callable
+from dataclasses import dataclass, field
 from typing import Any
 
 from .models import TraceEvent
