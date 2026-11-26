@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import subprocess
 import sys
 from typing import Any
 
@@ -73,8 +72,13 @@ async def call_tool(name: str, args: dict[str, Any]) -> str:
     if name == "review_diff":
         return await _review(args["diff"])
     if name == "review_working_tree":
-        diff = subprocess.run(["git", "-C", args["repo_path"], "diff", args.get("base") or "HEAD"],
-                              capture_output=True, text=True, check=True).stdout
+        proc = await asyncio.create_subprocess_exec(
+            "git", "-C", args["repo_path"], "diff", args.get("base") or "HEAD",
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+        out, err = await proc.communicate()
+        if proc.returncode != 0:
+            raise RuntimeError(f"git diff failed: {err.decode().strip()}")
+        diff = out.decode()
         return await _review(diff) if diff.strip() else "No uncommitted changes."
     if name == "list_rules":
         return _rules(args.get("agent"))
@@ -98,7 +102,7 @@ async def handle(msg: dict[str, Any]) -> dict[str, Any] | None:
             return _ok(mid, {"content": [{"type": "text", "text": text}], "isError": False})
         except KeyError as e:
             return {"jsonrpc": "2.0", "id": mid, "error": {"code": -32602, "message": f"unknown tool or argument: {e}"}}
-        except Exception as e:  # noqa: BLE001 - reported to the client in-band
+        except Exception as e:  # reported to the client in-band
             return _ok(mid, {"content": [{"type": "text", "text": f"{type(e).__name__}: {e}"}], "isError": True})
     return {"jsonrpc": "2.0", "id": mid, "error": {"code": -32601, "message": f"method not found: {method}"}}
 

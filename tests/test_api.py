@@ -4,12 +4,13 @@ import json
 
 import pytest
 
-fastapi = pytest.importorskip("fastapi")
-from fastapi.testclient import TestClient  # noqa: E402
+pytest.importorskip("fastapi")
 
-from conftest import SAMPLE  # noqa: E402
-from reviewpilot.api import create_app  # noqa: E402
-from reviewpilot.store import Store  # noqa: E402
+from conftest import SAMPLE
+from fastapi.testclient import TestClient
+
+from reviewpilot.api import create_app
+from reviewpilot.store import Store
 
 
 @pytest.fixture

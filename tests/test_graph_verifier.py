@@ -2,12 +2,12 @@ import asyncio
 import time
 
 import pytest
+from conftest import new_file_diff
 
 from reviewpilot.diff import parse_diff
 from reviewpilot.graph import Graph
 from reviewpilot.models import Category, Finding, Severity
 from reviewpilot.verifier import VerifierConfig, verify
-from conftest import new_file_diff
 
 
 def test_independent_nodes_run_concurrently():
@@ -20,10 +20,10 @@ def test_independent_nodes_run_concurrently():
         g.add(n, slow, deps=["a"])
     g.add("e", slow, deps=["b", "c", "d"])
     t0 = time.perf_counter()
-    state, trace = asyncio.run(g.run({}))
+    _state, trace = asyncio.run(g.run({}))
     elapsed = time.perf_counter() - t0
     assert elapsed < 0.45                      # 3 levels, not 5 sequential nodes
-    assert [e.node for e in trace][0] == "a" and trace[-1].node == "e"
+    assert trace[0].node == "a" and trace[-1].node == "e"
 
 
 def test_cycles_and_unknown_deps_are_rejected():

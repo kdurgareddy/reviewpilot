@@ -77,3 +77,25 @@ def test_benchmark_regression_gate():
     assert rep.overall.precision >= 0.95, rep.false_positives
     assert rep.overall.recall >= 0.85, rep.misses
     assert rep.clean_false_positives == 0
+
+
+def test_mcp_review_working_tree(tmp_path):
+    import subprocess
+
+    from reviewpilot.mcp_server import call_tool
+
+    git = ["git", "-C", str(tmp_path), "-c", "user.name=t", "-c", "user.email=t@t"]
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    (tmp_path / "app.py").write_text("def ok():\n    return 1\n")
+    subprocess.run([*git, "add", "."], check=True)
+    subprocess.run([*git, "commit", "-qm", "init"], check=True)
+    (tmp_path / "app.py").write_text("def ok():\n    return 1\n\n\ndef run(cmd):\n    return eval(cmd)\n")
+    text = asyncio.run(call_tool("review_working_tree", {"repo_path": str(tmp_path)}))
+    assert "app.py:6" in text and "eval" in text.lower()
+    clean = tmp_path / "clean"
+    clean.mkdir()
+    subprocess.run(["git", "init", "-q", str(clean)], check=True)
+    (clean / "a.txt").write_text("x\n")
+    subprocess.run(["git", "-C", str(clean), "-c", "user.name=t", "-c", "user.email=t@t", "add", "."], check=True)
+    subprocess.run(["git", "-C", str(clean), "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "i"], check=True)
+    assert asyncio.run(call_tool("review_working_tree", {"repo_path": str(clean)})) == "No uncommitted changes."

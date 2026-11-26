@@ -27,23 +27,23 @@ from .models import Category, FileDiff, Finding, Severity, Usage
 FOCUS = {
     "security": (
         Category.SECURITY,
-        "injection (SQL, command, template), authentication and authorisation gaps, secrets, unsafe "
-        "deserialisation, SSRF, path traversal, XSS, weak crypto, missing input validation",
+        ("injection (SQL, command, template), authentication and authorisation gaps, secrets, unsafe "
+        "deserialisation, SSRF, path traversal, XSS, weak crypto, missing input validation"),
     ),
     "bugs": (
         Category.BUG,
-        "logic errors, off-by-one, wrong conditions, null/None handling, unhandled errors, race conditions, "
-        "resource leaks, incorrect async usage, type confusion, broken edge cases",
+        ("logic errors, off-by-one, wrong conditions, null/None handling, unhandled errors, race conditions, "
+        "resource leaks, incorrect async usage, type confusion, broken edge cases"),
     ),
     "performance": (
         Category.PERFORMANCE,
-        "N+1 queries, blocking calls in async code, needless work in loops, quadratic algorithms, unbounded "
-        "memory, missing pagination or caching, chatty network calls",
+        ("N+1 queries, blocking calls in async code, needless work in loops, quadratic algorithms, unbounded "
+        "memory, missing pagination or caching, chatty network calls"),
     ),
     "testing": (
         Category.TESTING,
-        "new or changed behaviour without tests, tests with no assertions, missing edge-case and failure tests, "
-        "flaky patterns (sleeps, real network, time)",
+        ("new or changed behaviour without tests, tests with no assertions, missing edge-case and failure tests, "
+        "flaky patterns (sleeps, real network, time)"),
     ),
 }
 
@@ -145,7 +145,7 @@ class SpecialistAgent:
         for attempt in range(self.max_retries):
             try:
                 return await self.provider.complete_json(system, user, FINDINGS_SCHEMA)
-            except (ConnectionError, TimeoutError, asyncio.TimeoutError):
+            except (ConnectionError, TimeoutError):
                 if attempt == self.max_retries - 1:
                     raise
                 await asyncio.sleep(delay * (0.5 + random.random()))

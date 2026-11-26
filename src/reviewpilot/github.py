@@ -83,7 +83,7 @@ class GitHubClient:
         )
 
     @classmethod
-    async def for_installation(cls, app_id: str, private_key: str, installation_id: int) -> "GitHubClient":
+    async def for_installation(cls, app_id: str, private_key: str, installation_id: int) -> GitHubClient:
         import httpx
 
         async with httpx.AsyncClient(base_url=API, timeout=30) as c:

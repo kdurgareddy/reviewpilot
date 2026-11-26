@@ -11,7 +11,8 @@ from __future__ import annotations
 import asyncio
 import time
 from dataclasses import dataclass, field
-from typing import Any, Awaitable, Callable
+from collections.abc import Awaitable, Callable
+from typing import Any
 
 from .models import TraceEvent
 
@@ -30,7 +31,7 @@ class Node:
 class Graph:
     nodes: dict[str, Node] = field(default_factory=dict)
 
-    def add(self, name: str, fn: NodeFn, deps: tuple[str, ...] | list[str] = (), optional: bool = False) -> "Graph":
+    def add(self, name: str, fn: NodeFn, deps: tuple[str, ...] | list[str] = (), optional: bool = False) -> Graph:
         if name in self.nodes:
             raise ValueError(f"duplicate node {name}")
         self.nodes[name] = Node(name, fn, tuple(deps), optional)
@@ -78,7 +79,7 @@ class Graph:
             try:
                 state[node.name] = await node.fn(state)
                 trace.append(TraceEvent(node.name, start, (time.perf_counter() - t0) * 1000))
-            except Exception as e:  # noqa: BLE001 - recorded in the trace
+            except Exception as e:  # recorded in the trace
                 failed.add(node.name)
                 state[node.name] = None
                 trace.append(TraceEvent(node.name, start, (time.perf_counter() - t0) * 1000, "error", repr(e)[:200]))

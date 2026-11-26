@@ -181,7 +181,7 @@ class CachedProvider:
 def parse_json(text: str) -> dict[str, Any]:
     """Parse model output that should be JSON, tolerating code fences and stray prose."""
     text = text.strip()
-    fence = re.search(r"```(?:json)?\s*(\{.*\})\s*```", text, re.S)
+    fence = re.search(r"```(?:json)?\s*(\{.*\})\s*```", text, re.DOTALL)
     if fence:
         text = fence.group(1)
     try:

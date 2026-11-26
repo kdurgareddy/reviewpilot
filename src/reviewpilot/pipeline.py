@@ -110,4 +110,4 @@ def count_by(findings, attr: str) -> dict[str, int]:
     return out
 
 
-__all__ = ["ReviewConfig", "review_diff", "route", "count_by", "Category", "Severity"]
+__all__ = ["Category", "ReviewConfig", "Severity", "count_by", "review_diff", "route"]

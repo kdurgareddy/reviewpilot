@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Callable, Iterable
+from collections.abc import Callable, Iterable
 
 from ..models import Category, FileDiff, Finding, Hunk, Line, Severity
 
